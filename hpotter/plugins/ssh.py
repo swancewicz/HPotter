@@ -12,7 +12,13 @@ from paramiko.py3compat import u, decodebytes
 from binascii import hexlify
 import sys
 
-host_key = paramiko.RSAKey(filename="RSAKey.cfg")
+## added
+from binascii import hexlify
+
+
+host_key = paramiko.RSAKey(filename="/root/github/HPotter/RSAKey.cfg")
+print("Read key: " + u(hexlify(host_key.get_fingerprint())))
+
 # Replace qandr with Inna's Command Response Script
 qandr = {b'ls': 'foo',
          b'more': 'bar',
@@ -144,8 +150,8 @@ class SSHServer(socketserver.ThreadingMixIn, socketserver.TCPServer, paramiko.Se
 
 # listen to both IPv4 and v6
 def get_addresses():
-    return ([(socket.AF_INET, '127.0.0.1', 22),
-             (socket.AF_INET6, '::1', 22)])
+    return ([(socket.AF_INET, '127.0.0.1', 88),
+             (socket.AF_INET6, '::1', 88)])
 
 
 def client_handler(my_socket):
