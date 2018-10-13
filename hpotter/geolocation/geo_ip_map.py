@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-
+import json
 import matplotlib.pyplot as plt
 import numpy as np
 import re
@@ -16,46 +16,24 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-
-def world_map(value1, value2):
+def globe(ip_list):
 
     # size of window
-    plt.figure(num=None, figsize=(24,24))
+    plt.figure(figsize=(50,24))
     
-    map = Basemap(projection='robin', lat_0=0, lon_0=0,)
-
-    #map.bluemarble()
-    map.drawmapboundary(fill_color='#A6CAE0')
-    map.fillcontinents(color='grey', alpha=0.3)
-
-    # plot geo location from ip
-    lat,lon=value1, value2
-    x,y = map(lon,lat)
-    map.plot(x,y,'ro')
-
-    plt.title("Attacker's IP")
-    #plt.title('contour lines over filled continent background')
-    plt.show()
-
-
-
-def globeorigional(value1, value2):
-
+    map = Basemap(projection='robin', lat_0=0, lon_0=0)
     #map = Basemap(projection='ortho',lat_0=45,lon_0=-100,resolution='l')
-    map = Basemap(projection='ortho', resolution='l', lat_0=50, lon_0=0)
+    #map = Basemap(projection='ortho', resolution='l', lat_0=50, lon_0=0)
 
-    # size of window
-    plt.figure(figsize=(16,16))
 
     # draw coastlines, country boundaries, fill continents.
-    map.drawcoastlines(linewidth=0.25)
-    map.drawcountries(linewidth=0.25)
-    map.drawstates(linewidth=0.24)
-    map.fillcontinents(color='dimgray',lake_color='darkgray')
+    map.drawcoastlines(linewidth=0.30)
+    map.drawcountries(linewidth=0.30)
+    map.drawstates(linewidth=0.30)
+    #map.fillcontinents(color='dimgray',lake_color='darkgray')
     #map.fillcontinents(color='coral',lake_color='aqua')
 
-
-    #map.bluemarble()
+    map.bluemarble()
     # draw the edge of the map projection region (the projection limb)
     map.drawmapboundary(fill_color='darkgray')
 
@@ -63,16 +41,13 @@ def globeorigional(value1, value2):
     #map.drawmeridians(np.arange(0,360,30))
     #map.drawparallels(np.arange(-90,90,30))
 
-    ## plot geo location from ip
-    lat,lon=value1, value2
-    x,y = map(lon,lat)
-    map.plot(x,y,'bo')
-    #map.plot(x,y,'r')
+    for ip in ip_list:
+        ## plot geo location from ip
+        lat,lon = get_ip(ip)
+        x,y = map(lon,lat)
+        map.plot(x,y,'ro')
 
-    # contour data over the map.
-    #cs = map.contour(x,y,wave+mean,15,linewidths=1.5)
-    plt.title("Incoming IP Address")
-    #plt.title('contour lines over filled continent background')
+    plt.title("Incoming IP Address").set_fontsize(50)
     plt.show()
 
 
@@ -97,70 +72,35 @@ def get_ip(ip):
         
     return latitude, longitude    
 
+def connect():
 
+    bag = []
+    sqlite_db = '/root/github/HPotter/main.db'
+    table_name = 'hpotterdb'
+    column1 = 'id'
+    column2 = 'sourceIP'
+    sql = "SELECT {col2} FROM {tn}". format(col2 = column2, tn=table_name)
 
-def globe(ip_list):
-
-    map = Basemap(projection='robin', lat_0=0, lon_0=0,)
-    #map = Basemap(projection='ortho',lat_0=45,lon_0=-100,resolution='l')
-    #map = Basemap(projection='ortho', resolution='l', lat_0=50, lon_0=0)
-
-    # size of window
-    plt.figure(figsize=(24,24))
-
-    # draw coastlines, country boundaries, fill continents.
-    map.drawcoastlines(linewidth=0.25)
-    map.drawcountries(linewidth=0.25)
-    map.drawstates(linewidth=0.24)
-    map.fillcontinents(color='dimgray',lake_color='darkgray')
-    #map.fillcontinents(color='coral',lake_color='aqua')
-
-    #map.bluemarble()
-    # draw the edge of the map projection region (the projection limb)
-    map.drawmapboundary(fill_color='darkgray')
-
-    # draw lat/lon grid lines every 30 degrees.
-    #map.drawmeridians(np.arange(0,360,30))
-    #map.drawparallels(np.arange(-90,90,30))
-
-    for ip in ip_list:
-        ## plot geo location from ip
-        lat,lon = get_ip(ip)
-        x,y = map(lon,lat)
-        map.plot(x,y,'ro')
-
-    plt.title("Incoming IP Address")
-    plt.show()
-
-
-
-def main():
-
-    ## n.korea,russia,africa,colorado
-    list_of_ips = ["2.63.255.255", "27.106.204.0", "41.31.255.255 ", "73.95.156.214", "2.191.255.255"]
-    
-    sqlite_file = '/root/github/HPotter/main.db'
-    table_name = 'test_IP_matplotlib'
-    column_name = 'IP_address'
-    
     # Connect to db
-    conn = sqlite3.connect(sqlite_file)
+    conn = sqlite3.connect(sqlite_db)
     c = conn.cursor()
 
-    c.execute('SELECT * FROM {tn} WHERE {cn}'. format(tn=table_name, cn=column_name))
+    c.execute(sql)
     
-    # can use fetchall()
-    result = c.fetchone() 
-    if result:
-        #print(result[0])
-        answer = result[0]
+    answer = c.fetchall()
+    
+    for x in answer:
+        #print(x[0])   
+        bag.append(x[0])
 
-    globe(list_of_ips)
-    #world_map(list_of_ips)
+    #print(bag)
+
+    globe(bag)
+
     conn.commit()
     conn.close()
 
 
-
-main()
+if __name__ == '__main__':
+    connect()
 

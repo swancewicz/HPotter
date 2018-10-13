@@ -22,7 +22,21 @@ Once the jsonserver is running, you can see the current data by loading the
 ajax.html file that is in the directory above into your web browser.
 
 To see the current contents of the database, do:
-    sqlite3 -list main.db .dump
+To open sqlite cli with database --> your path might be different to database
+--> sqlite </path/to/database/main.db>
+
+To see tables available
+.tables
+
+To check table setup
+.schema <table name>
+
+To turn on header in table when query. Helps identify tables
+.header on
+.mode column
+
+To see all data in table
+SELECT * FROM <table_name>
 
 The JSON API is easy to query. To get all the data, go to localhost:8080:
 
@@ -55,3 +69,5 @@ a good place to start for creating your own plugins.
 jsonserver/
 
 Where the SQL to JSON web server resides.    
+
+#### PUT IN HERE HOW TO LAUNCH GEO_LOCTION #######
