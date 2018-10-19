@@ -6,13 +6,12 @@ import numpy as np
 import re
 import json
 import sqlite3
-import folium
 from mpl_toolkits.basemap import Basemap
 from urllib.request import urlopen
 
 # Folium imports
-from mpl_toolkits.basemap import Basemap
 import numpy as np
+import folium
 import matplotlib.pyplot as plt
 
 
