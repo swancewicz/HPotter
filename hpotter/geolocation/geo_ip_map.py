@@ -8,6 +8,7 @@ import json
 import sqlite3
 from mpl_toolkits.basemap import Basemap
 from urllib.request import urlopen
+from python_dbconfig import read_db_config
 
 # Folium imports
 import numpy as np
@@ -73,7 +74,7 @@ def get_ip(ip):
 
 def connect():
 
-    bag = []
+    bag_of_ips = []
     sqlite_db = '/root/github/HPotter/main.db'
     table_name = 'hpotterdb'
     column1 = 'id'
@@ -90,11 +91,11 @@ def connect():
     
     for x in answer:
         #print(x[0])   
-        bag.append(x[0])
+        bag_of_ips.append(x[0])
 
-    #print(bag)
+    #print(bag_of_ips)
 
-    globe(bag)
+    globe(bag_of_ips)
 
     conn.commit()
     conn.close()
