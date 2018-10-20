@@ -14,8 +14,8 @@ import datetime
 todaysdate = time.strftime("%a %b %d %H:%M:%S %Y")
 
 ssh_commands = {
-        'ls': 'Servers  Databases   Top_Secret  Documents',
-        'ifconfig': 'lo: flags=75<UP,LOOPBACK,RUNNING> mtu 43386' \
+        b'ls': 'Servers  Databases   Top_Secret  Documents',
+        b'ifconfig': 'lo: flags=75<UP,LOOPBACK,RUNNING> mtu 43386' \
                     '\n     inet 127.0.0.1 netmask 255.0.0.0' \
                     '\n     inet6 ::1 prefixlen 128 scopeid 0x10<host>' \
                     '\n     loop txquuelen 1000 (Local Loopback)' \
@@ -25,9 +25,9 @@ ssh_commands = {
                     '\n     TX errors dropped 0 overruns 0 carrier 0 collisions 0'\
                     '\n\n     -------TEST---TEST----TEST-----TEST---------------------',
             
-        'date': todaysdate,
-        'whoami': 'root',
-        'netstat':  'Active Internet connections (w/o servers)' \
+        b'date': todaysdate,
+        b'whoami': 'root',
+        b'netstat':  'Active Internet connections (w/o servers)' \
                     '\nProto Recv-Q Send-Q Local Address           Foreign Address         State' \
                     '\ntcp        0      0 localhost:51631         localhost:56104         ESTABLISHED' \
                     '\ntcp        0      0 localhost:60638         wf.networksolution:http TIME_WAIT' \
@@ -162,10 +162,10 @@ ssh_commands = {
                     '\nunix  3      [ ]         STREAM     CONNECTED     30219    /run/user/0/bus' \
                     '\nunix  3      [ ]         STREAM     CONNECTED     27656    /run/systemd/journal/stdout',
 
-        'find': ' ',
-        'ping': ' ',
-        'nslookup': '         ',
-        'ps': '\nPID TTY          TIME CMD' \
+        b'find': ' ',
+        b'ping': ' ',
+        b'nslookup': '         ',
+        b'ps': '\nPID TTY          TIME CMD' \
                 '\n  831 tty1     00:00:01 Xorg' \
                 '\n  839 tty1     00:00:00 gnome-session-b' \
                 '\n  861 tty1     00:00:13 gnome-shell' \
@@ -221,7 +221,7 @@ ssh_commands = {
                 '\n10009 pts/1    00:00:03 vim' \
                 '\n10126 pts/2    00:00:00 ps',
 
-        'ps -a': '\nPID TTY          TIME CMD' \
+        b'ps -a': '\nPID TTY          TIME CMD' \
                 '\n  831 tty1     00:00:01 Xorg' \
                 '\n  839 tty1     00:00:00 gnome-session-b' \
                 '\n  861 tty1     00:00:13 gnome-shell' \
@@ -277,7 +277,7 @@ ssh_commands = {
                 '\n10009 pts/1    00:00:03 vim' \
                 '\n10126 pts/2    00:00:00 ps',
 
-        'vi /etc/shadow': '\nroot:$1$/avpfBJ1$x0z8w5UF9Iv./DR9E9Lid.:14747:0:99999:7:::' \
+        b'vi /etc/shadow': '\nroot:$1$/avpfBJ1$x0z8w5UF9Iv./DR9E9Lid.:14747:0:99999:7:::' \
                             '\ndaemon:*:14684:0:99999:7:::' \
                             '\nbin:*:14684:0:99999:7:::' \
                             '\nsys:$1$fUX6BPOt$Miyc3UpOzQJqz4s5wFD9l0:14742:0:99999:7:::' \
@@ -316,7 +316,7 @@ ssh_commands = {
                             '\nsnmp:*:15480:0:99999:7:::' \
                             '\nskywalker:$1$OHklYwhp$vwtbf4vho8RcuLUlYv9rL1:17741:0:99999:7:::' ,
         
-        'vi /etc/passwd': '\nroot:x:0:0:root:/root:/bin/bash' \
+        b'vi /etc/passwd': '\nroot:x:0:0:root:/root:/bin/bash' \
                             '\ndaemon:x:1:1:daemon:/usr/sbin:/bin/sh' \
                             '\nbin:x:2:2:bin:/bin:/bin/sh' \
                             '\nsys:x:3:3:sys:/dev:/bin/sh' \

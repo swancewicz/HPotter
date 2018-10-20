@@ -354,9 +354,40 @@ ssh_commands = {
                             '\nstatd:x:114:65534::/var/lib/nfs:/bin/false' \
                             '\nsnmp:x:115:65534::/var/lib/snmp:/bin/false' \
                             '\nskywalker:x:1003:1003::/home/skywalker:/bin/sh',
+        '': 'please enter a command',
 
 
         }
 
 
+telnet_commands = {
+       'connect': 'Client              : System.Net.Sockets.Socket' \
+                   '\nAvailable           : 0' \
+                   '\nConnected           : True' \
+                   '\nExclusiveAddressUse : False' \
+                   '\nReceiveBufferSize   : 65536' \
+                   '\nSendBufferSize      : 65536' \
+                   '\nReceiveTimeout      : 0' \
+                   '\nSendTimeout         : 0' \
+                   '\nLingerState         : System.Net.Sockets.LingerOption' \
+                   '\nNoDelay             : False',        'ls': '?Invalid command',
+       'help': 'Commands may be abbreviated. Commands are:' \
+               '\nclose       close current connection' \
+               '\nlogout      forcibly logout remote user and close the connection' \
+               '\ndisplay     display operating parameters' \
+               '\nmode        try to enter line or character mode (\'mode ?\' for more)' \
+               '\nopen        connect to a site' \
+               '\nquit        exit telnet' \
+               '\nsend        transmit special characters (\'send ?\' for more)' \
+               '\nset         set operating parameters (\'set ?\' for more)' \
+               '\nunset       unset operating parameters (\'unset ?\' for more)' \
+               '\nstatus      print status information' \
+               '\ntoggle      toggle operating parameters (\'toggle ?\' for more)' \
+               '\nslc         set treatment of special characters' \
+               '\nz           suspend telnet' \
+               '\nenviron     change environment variables (\'environ ?\' for more)',
+       'status': 'No connection.' \
+               '\nEscape character is \'^].' \
+               '\ntelnet>',
 
+        }
