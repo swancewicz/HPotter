@@ -3,32 +3,30 @@ from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.ext.declarative import declared_attr
 from hpotter.hpotter import HPotterDB
 from hpotter.env import logger
-from datetime import datetime
 import socket
 import paramiko
 import socketserver
 import threading
+from datetime import datetime
 from paramiko.py3compat import u, decodebytes
 from binascii import hexlify
-import sys
-from command_response.py import telnet_commands
-
-
-
-## added
-from binascii import hexlify
-
+from response_script import command_response
+#from command_response import ssh_commands
 
 host_key = paramiko.RSAKey(filename="/root/github/HPotter/RSAKey.cfg")
 print("Read key: " + u(hexlify(host_key.get_fingerprint())))
 
-## This dictionary rached out to the command_response module
-#qandr = {b'ls': 'foo',
-#         b'more': 'bar',
-#         b'date': datetime.utcnow().strftime("%a %b %d %H:%M:%S UTC %Y")}
+## This dictionary rached out to the response_script module
+qandr = {b'ls': 'foo',
+         b'more': 'bar',
+         b'date': datetime.utcnow().strftime("%a %b %d %H:%M:%S UTC %Y")}
 
-qandr = ssh_commands[command]
+#qandr = ssh_commands[command]
 
+from binascii import hexlify
+import sys
+
+host_key = paramiko.RSAKey(filename="RSAKey.cfg")
 
 class CommandTable(HPotterDB.Base):
     @declared_attr
@@ -155,8 +153,8 @@ class SSHServer(socketserver.ThreadingMixIn, socketserver.TCPServer, paramiko.Se
 
 # listen to both IPv4 and v6
 def get_addresses():
-    return ([(socket.AF_INET, '127.0.0.1', 88),
-             (socket.AF_INET6, '::1', 88)])
+    return ([(socket.AF_INET, '127.0.0.1', 22),
+             (socket.AF_INET6, '::1', 22)])
 
 
 def client_handler(my_socket):
@@ -212,8 +210,8 @@ def receive_client_data(chan):
     while True:
         character = chan.recv(1024)
         if character == (b'\r' or b'\r\n' or b''):
-            if command in qandr:
-                chan.send("\r\n" + qandr[command])
+            if command in qandr.qandr:
+                chan.send("\r\n" + qandr.qandr[command])
             else:
                 chan.send(b"\r\nbash: " + command + b": command not found")
             command_list.append(command)

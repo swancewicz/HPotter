@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 import sys
-from command_response import ssh_commands
-from command_response import telnet_commands
+from response_script import ssh_commands
+from response_script import telnet_commands
 #print(sys.path)
 
 ## This command will allow input to be a string like a normal command ex: vi /etc/shadow
