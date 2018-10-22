@@ -7,14 +7,19 @@ from datetime import datetime
 import socket
 import socketserver
 import threading
+import sys
+from command_response.py import telnet_commands
 
 # remember to put name in __init__.py
 
 # https://docs.python.org/3/library/socketserver.html
 
 # put all the simple text queries in here
-qandr = {'ls': 'foo\n', \
-    'more': 'bar\n'}
+#qandr = {'ls': 'foo\n', \
+#    'more': 'bar\n'}
+
+qandr = telnet_commands[command]
+
 
 class CommandTable(HPotterDB.Base):
     @declared_attr

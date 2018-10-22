@@ -11,7 +11,9 @@ import threading
 from paramiko.py3compat import u, decodebytes
 from binascii import hexlify
 import sys
-#from command_response.py import ssh_commands
+from command_response.py import telnet_commands
+
+
 
 ## added
 from binascii import hexlify
@@ -21,11 +23,11 @@ host_key = paramiko.RSAKey(filename="/root/github/HPotter/RSAKey.cfg")
 print("Read key: " + u(hexlify(host_key.get_fingerprint())))
 
 ## This dictionary rached out to the command_response module
-qandr = {b'ls': 'foo',
-         b'more': 'bar',
-         b'date': datetime.utcnow().strftime("%a %b %d %H:%M:%S UTC %Y")}
+#qandr = {b'ls': 'foo',
+#         b'more': 'bar',
+#         b'date': datetime.utcnow().strftime("%a %b %d %H:%M:%S UTC %Y")}
 
-#qandr = ssh_commands[
+qandr = ssh_commands[command]
 
 
 class CommandTable(HPotterDB.Base):

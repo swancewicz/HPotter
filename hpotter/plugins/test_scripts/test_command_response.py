@@ -29,8 +29,8 @@ def telnet(console_input):
     else:
         print("please re-enter command")
 
-#ssh(console_input)
-telnet(console_input)
+ssh(console_input)
+#telnet(console_input)
 
 
 
