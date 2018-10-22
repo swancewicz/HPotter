@@ -3,32 +3,23 @@ from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.ext.declarative import declared_attr
 from hpotter.hpotter import HPotterDB
 from hpotter.env import logger
-
-from datetime import datetime
+from hpotter.hpotter import qandr
 import socket
 import socketserver
 import threading
-import sys
 
 # remember to put name in __init__.py
 
 # https://docs.python.org/3/library/socketserver.html
-
-# put all the simple text queries in here
-qandr = {'ls': 'foo\n', \
-    'more': 'bar\n'}
-
-# qandr = telnet_commands[command]
-
 
 class CommandTableTelnet(HPotterDB.Base):
     @declared_attr
     def __tablename__(cls):
         return cls.__name__.lower()
 
+    extend_existing=True
     id =  Column(Integer, primary_key=True)
     command = Column(String)
-
     hpotterdb_id = Column(Integer, ForeignKey('hpotterdb.id'))
     hpotterdb = relationship("HPotterDB")
 
@@ -40,11 +31,6 @@ class LoginTableTelnet(HPotterDB.Base):
     id =  Column(Integer, primary_key=True)
     username = Column(String)
     password = Column(String)
-
-    hpotterdb_id = Column(Integer, ForeignKey('hpotterdb.id'))
-    hpotterdb = relationship("HPotterDB")
-
-class TelnetTCPHandler(socketserver.BaseRequestHandler):
     hpotterdb_id = Column(Integer, ForeignKey('hpotterdb.id'))
     hpotterdb = relationship("HPotterDB")
 
@@ -109,6 +95,7 @@ class TelnetHandler(socketserver.BaseRequestHandler):
             cmd = CommandTableTelnet(command=command.decode("utf-8"))
             cmd.hpotterdb = entry
             self.session.add(cmd)
+
     def finish(self):
         self.session.commit()
         self.session.close()
@@ -128,15 +115,13 @@ class TelnetServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
         self.engine = engine
 
         # must be called after setting mysocket as __init__ calls server_bind
-
-        socketserver.TCPServer.__init__(self, None, TelnetTCPHandler)
+        socketserver.TCPServer.__init__(self, None, TelnetHandler)
 
     def server_bind(self):
         self.socket = self.mysocket
 
 # listen to both IPv4 and v6
 def get_addresses():
-
     return ([(socket.AF_INET, '127.0.0.1', 23), \
         (socket.AF_INET6, '::1', 23)])
 

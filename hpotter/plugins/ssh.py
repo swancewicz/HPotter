@@ -8,18 +8,19 @@ import paramiko
 import socketserver
 import threading
 from datetime import datetime
+from hpotter.hpotter import qandr
 from paramiko.py3compat import u, decodebytes
 from binascii import hexlify
-from response_script import command_response
-#from command_response import ssh_commands
 
-host_key = paramiko.RSAKey(filename="/root/github/HPotter/RSAKey.cfg")
+# from command_response import ssh_commands
+
+host_key = paramiko.RSAKey(filename="RSAKey.cfg")
 print("Read key: " + u(hexlify(host_key.get_fingerprint())))
 
 ## This dictionary rached out to the response_script module
-qandr = {b'ls': 'foo',
-         b'more': 'bar',
-         b'date': datetime.utcnow().strftime("%a %b %d %H:%M:%S UTC %Y")}
+# qandr = {b'ls': 'foo',
+#         b'more': 'bar',
+#         b'date': datetime.utcnow().strftime("%a %b %d %H:%M:%S UTC %Y")}
 
 #qandr = ssh_commands[command]
 
