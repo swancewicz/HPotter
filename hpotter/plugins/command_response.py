@@ -361,7 +361,7 @@ ssh_commands = {
 
 
 telnet_commands = {
-       'connect': 'Client              : System.Net.Sockets.Socket' \
+       b'connect': 'Client              : System.Net.Sockets.Socket' \
                    '\nAvailable           : 0' \
                    '\nConnected           : True' \
                    '\nExclusiveAddressUse : False' \
@@ -371,7 +371,7 @@ telnet_commands = {
                    '\nSendTimeout         : 0' \
                    '\nLingerState         : System.Net.Sockets.LingerOption' \
                    '\nNoDelay             : False',        'ls': '?Invalid command',
-       'help': 'Commands may be abbreviated. Commands are:' \
+       b'help': 'Commands may be abbreviated. Commands are:' \
                '\nclose       close current connection' \
                '\nlogout      forcibly logout remote user and close the connection' \
                '\ndisplay     display operating parameters' \
@@ -386,7 +386,7 @@ telnet_commands = {
                '\nslc         set treatment of special characters' \
                '\nz           suspend telnet' \
                '\nenviron     change environment variables (\'environ ?\' for more)',
-       'status': 'No connection.' \
+       b'status': 'No connection.' \
                '\nEscape character is \'^].' \
                '\ntelnet>',
 
