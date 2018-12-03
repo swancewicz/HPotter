@@ -4,7 +4,7 @@ from subprocess import Popen, PIPE
 # AND: Login using "docker login" in quickstart terminal if no config file found
 # Docker SDK Documentation: https://docker-py.readthedocs.io/en/stable/index.html
 
-distro = "ubuntu:latest"
+distro = "alpine:latest"
 
 
 # Help From: https://stackoverflow.com/questions/1191374/using-module-subprocess-with-timeout
@@ -12,7 +12,7 @@ def check_docker():
     global ver, doc_client
     not_detected, detected = "\nDocker not detected.", \
                              "\nDocker detected!"
-    ver_cmd = "docker version"
+    ver_cmd = ["docker", "version"]
     try:
         run_cmd = Popen(ver_cmd, stdout=PIPE, stderr=PIPE)
         stdout, stderr = run_cmd.communicate()
@@ -41,7 +41,8 @@ def get_response(cmd, wdir):
             if work_dir != base_dir:
                 if not work_dir.__contains__("/"):
                     work_dir = "/{}".format(work_dir)
-                cmd = "/bin/bash -c '{0} {1}'".format(cmd, wdir)
+                    # changed from bash --> ash because of alpine
+                cmd = "/bin/ash -c '{0} {1}'".format(cmd, wdir)
                 output = doc_client.containers.run(distro, cmd, remove=True).decode()
             else:
                 output = doc_client.containers.run(distro, cmd, remove=True).decode()
@@ -59,7 +60,7 @@ def change_directories(cmd):
     global work_dir
     dne = False
     try:
-        test_cmd = "/bin/bash -c '{}'".format(cmd)
+        test_cmd = "/bin/ash -c '{}'".format(cmd)
         doc_client.containers.run(distro, test_cmd, remove=True)
         if ver == 1:
             if cmd != "cd ..":

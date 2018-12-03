@@ -14,7 +14,7 @@ import sys
 
 
 class SSHServer(paramiko.ServerInterface):
-    undertest = False    
+    undertest = False
     data = (
         b"AAAAB3NzaC1yc2EAAAABIwAAAIEAyO4it3fHlmGZWJaGrfeHOVY7RWO3P9M7hp"
         b"fAu7jJ2d7eothvfeuoRFtJwhUmZDluRdFyhFY/hFAh76PJKGAusIqIQKlkJxMC"
@@ -104,8 +104,8 @@ class SSHServer(paramiko.ServerInterface):
                     if dne is True:
                         dne_output = "\r\nbash: {}: command not found".format(command)
                         chan.send(dne_output)
-                elif command in command_response:
-                    chan.send(command_response[command])
+                # elif command in command_response:
+                #     chan.send(command_response[command])
                 else:
                     output = "\r\n" + linux_container.get_response(command, work_dir)
                     chan.send(output)

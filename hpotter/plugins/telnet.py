@@ -76,8 +76,8 @@ class TelnetHandler(socketserver.BaseRequestHandler):
                     socket.sendall(dne_output.encode("utf-8"))
             elif command == 'exit':
                 break
-            elif command in command_response:
-                socket.sendall(command_response[command].encode("utf-8"))
+            # elif command in command_response:
+            #     socket.sendall(command_response[command].encode("utf-8"))
             else:
                 output = "\r\n" + linux_container.get_response(command, work_dir)
                 socket.sendall(output.encode("utf-8"))
@@ -111,7 +111,7 @@ class TelnetHandler(socketserver.BaseRequestHandler):
         self.session.add(login)
 
         self.request.sendall(b'Last login: Mon Nov 20 12:41:05 2017 from 8.8.8.8\r\n')
-        
+
         self.fake_shell(self.request, self.session, entry, prompt)
 
     def finish(self):
