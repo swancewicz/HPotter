@@ -19,6 +19,8 @@ network.disconnect(_response_container)
 
 
 def shutdown_servers(signum, frame):
+    _response_container.stop()
+    _response_container.remove()
     plugins_dict = hpotter.plugins.__dict__
     for plugin_name in plugins_dict['__all__']:
         importlib.import_module('hpotter.plugins.' + plugin_name)
