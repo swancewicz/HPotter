@@ -87,14 +87,13 @@ class SSHServer(paramiko.ServerInterface):
             modes):
         return True
 
-    def server_bind(self):
-        self.socket = self.mysocket
-
     # help from:
     # https://stackoverflow.com/questions/24125182/how-does-paramiko-channel-recv-exactly-work
     def receive_client_data(self, chan):
         command, work_dir, cd = "", "base", "cd"
         command_count = 0
+
+        threading.Timer(120, chan.close).start()
 
         while True:
             character = chan.recv(1024).decode("utf-8")
