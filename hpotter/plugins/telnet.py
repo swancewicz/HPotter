@@ -3,11 +3,10 @@ from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.ext.declarative import declared_attr
 from hpotter.hpotter import HPotterDB
 from hpotter.env import logger
-from hpotter.hpotter.command_response import command_response
 from hpotter.hpotter import consolidated
+from hpotter.hpotter.__main__ import _response_container
 
 import logging
-import docker
 import socket
 import socketserver
 import threading
@@ -15,8 +14,8 @@ import re
 
 from unittest.mock import Mock, call
 
-_telnet_container = None
 _telnet_server = None
+
 
 # https://docs.python.org/3/library/socketserver.html
 class TelnetHandler(socketserver.BaseRequestHandler):
@@ -100,16 +99,17 @@ class TelnetHandler(socketserver.BaseRequestHandler):
             cmd.hpotterdb = entry
             self.session.add(cmd)
 
-            global _telnet_container
             print(workdir)
             exit_code, output = \
-                _telnet_container.exec_run('timeout -t 1 ' + command,
-                    workdir=workdir)
+                _response_container.exec_run('timeout -t 1 ' + command,
+                                             workdir=workdir)
 
             if exit_code == 126:
                 socket.sendall(command.encode('utf-8') +
-                    b': command not found\n')
+                               b': command not found\n')
             else:
+                if output.__contains__(b"\n"):
+                    output = output.replace(b"\n", b"\r\n")
                 socket.sendall(output)
 
     def handle(self):
@@ -126,9 +126,9 @@ class TelnetHandler(socketserver.BaseRequestHandler):
         if username == '':
             return
 
-        prompt = b'\n#: '
+        prompt = b'\r\n#: '
         if username == 'root' or username == 'admin':
-            prompt = b'\n$: '
+            prompt = b'\r\n$: '
 
         password = self.trying(b'Password: ', self.request)
         if password == '':
@@ -138,7 +138,7 @@ class TelnetHandler(socketserver.BaseRequestHandler):
         login.hpotterdb = entry
         self.session.add(login)
 
-        self.request.sendall(b'Last login: Mon Nov 20 12:41:05 2017 from 8.8.8.8\n')
+        self.request.sendall(b'\r\nLast login: Mon Nov 20 12:41:05 2017 from 8.8.8.8\r\n')
 
         self.fake_shell(self.request, self.session, entry, prompt)
 
@@ -173,29 +173,22 @@ class TelnetServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
     def server_bind(self):
         self.socket = self.mysocket
 
+
 # listen to both IPv4 and v6
 # quad 0 allows for docker port exposure
 def get_addresses():
     return [(socket.AF_INET, '0.0.0.0', 23)]
 
+
 def start_server(my_socket, engine):
-    client = docker.from_env()
-
-    global _telnet_container
-    _telnet_container = client.containers.run('alpine', command=['/bin/ash'],
-        tty=True, detach=True, read_only=True)
-
-    network = client.networks.get('bridge')
-    network.disconnect(_telnet_container)
 
     global _telnet_server
     _telnet_server = TelnetServer(my_socket, engine)
     server_thread = threading.Thread(target=_telnet_server.serve_forever)
     server_thread.start()
 
+
 def stop_server():
     logging.info('Shutting down telnet server')
     _telnet_server.shutdown()
-    _telnet_container.stop()
-    _telnet_container.remove()
     logging.info('Done shutting down telnet server')

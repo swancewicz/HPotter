@@ -4,13 +4,14 @@ from sqlalchemy.ext.declarative import declared_attr
 from hpotter.hpotter import HPotterDB
 from hpotter.hpotter.command_response import command_response
 from paramiko.py3compat import u, decodebytes
-from hpotter.docker import linux_container
 from hpotter.hpotter import consolidated
 import socket
 import paramiko
 import threading
 from binascii import hexlify
 import sys
+import re
+from hpotter.hpotter.__main__ import _response_container
 
 
 class SSHServer(paramiko.ServerInterface):
@@ -90,37 +91,64 @@ class SSHServer(paramiko.ServerInterface):
     # help from:
     # https://stackoverflow.com/questions/24125182/how-does-paramiko-channel-recv-exactly-work
     def receive_client_data(self, chan):
-        command, work_dir, cd = "", "base", "cd"
         command_count = 0
+        workdir = ''
 
         threading.Timer(120, chan.close).start()
 
-        while True:
-            character = chan.recv(1024).decode("utf-8")
-            if character == ("\r" or "\r\n" or ""):
-                if command.startswith(cd):
-                    work_dir, dne = linux_container.change_directories(command)
-                    if dne is True:
-                        dne_output = "\r\nbash: {}: command not found".format(command)
-                        chan.send(dne_output)
-                # elif command in command_response:
-                #     chan.send(command_response[command])
-                else:
-                    output = "\r\n" + linux_container.get_response(command, work_dir)
-                    chan.send(output)
+        while command_count < 4:
+            command = ""
+            chan.send("\r\n# ")
 
-                cmd = consolidated.CommandTable(command=command)
-                cmd.hpotterdb = self.entry
-                self.session.add(cmd)
-
-                command_count += 1
-                if command_count > 3 or command == "exit":
+            while True:
+                character = chan.recv(1024).decode("utf-8")
+                if character == ("\r" or "\r\n" or ""):
                     break
-                command = ""
-                chan.send("\r\n# ")
-            else:
                 command += character
                 chan.send(character)
+            command_count += 1
+
+            if command == '':
+                continue
+
+            if command.startswith('cd'):
+                directory = command.split(' ')
+                if len(directory) == 1:
+                    continue
+                directory = directory[1]
+
+                if directory == '.':
+                    continue
+
+                if directory == '..':
+                    workdir = re.sub(r'/[^/]*/?$', '', workdir)
+                    continue
+
+                if directory[0] != '/':
+                    workdir += '/'
+                workdir += directory
+
+                continue
+
+            if command == 'exit':
+                break
+
+            cmd = consolidated.CommandTable(command=command)
+            cmd.hpotterdb = self.entry
+            self.session.add(cmd)
+
+            print(workdir)
+            exit_code, output = \
+                _response_container.exec_run('timeout -t 1 ' + command,
+                                             workdir=workdir)
+
+            if exit_code == 126:
+                chan.send(b'\r\n' + command.encode("utf-8") +
+                          b': command not found\n')
+            else:
+                if output.__contains__(b"\n"):
+                    output = output.replace(b"\n", b"\r\n")
+                chan.send(output)
 
     def finish(self):
         # ugly ugly ugly
@@ -128,13 +156,6 @@ class SSHServer(paramiko.ServerInterface):
         if not self.undertest:
             self.session.commit()
             self.session.close()
-
-    def send_ssh_introduction(self, chan):
-        chan.send("\r\nChannel Open!\r\n")
-        chan.send("\r\nNOTE:")
-        chan.send("\r\nType \"exit\" when finished\r\n")
-        chan.send("\r\nLast login: Whatever you want it to be")
-        chan.send("\r\n# ")
 
 
 # listen to both IPv4 and v6
@@ -163,9 +184,11 @@ def start_server(socket, engine):
         if not chan:
             print('no chan')
             continue
-        server.send_ssh_introduction(chan)
+
+        chan.send("\r\nLast login: Whatever you want it to be")
         server.receive_client_data(chan)
         chan.close()
+
 
 def stop_server():
     pass

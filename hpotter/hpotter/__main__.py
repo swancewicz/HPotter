@@ -4,10 +4,19 @@ import importlib
 from sqlalchemy import create_engine
 from hpotter.env import logger, db
 from hpotter.hpotter.HPotterDB import Base
-from hpotter.docker import linux_container
 
 import socket
 import signal
+import docker
+
+# start docker container
+client = docker.from_env()
+_response_container = client.containers.run('alpine', command=['/bin/ash'],
+                                            tty=True, detach=True, read_only=True)
+
+network = client.networks.get('bridge')
+network.disconnect(_response_container)
+
 
 def shutdown_servers(signum, frame):
     plugins_dict = hpotter.plugins.__dict__
@@ -15,6 +24,7 @@ def shutdown_servers(signum, frame):
         importlib.import_module('hpotter.plugins.' + plugin_name)
         plugin = plugins_dict[plugin_name]
         plugin.stop_server()
+
 
 if "__main__" == __name__:
     signal.signal(signal.SIGINT, shutdown_servers)
