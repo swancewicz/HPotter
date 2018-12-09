@@ -150,12 +150,17 @@ class SSHServer(paramiko.ServerInterface):
                     output = output.replace(b"\n", b"\r\n")
                 chan.send(output)
 
-    def finish(self):
+        self.session.commit()
+        self.session.close()
+
+    """Commented out for now, wasn't writing to db"""
+
+    # def finish(self):
         # ugly ugly ugly
         # i need to figure out how to properly mock sessionmaker
-        if not self.undertest:
-            self.session.commit()
-            self.session.close()
+    #    if not self.undertest:
+    #        self.session.commit()
+    #        self.session.close()
 
 
 # listen to both IPv4 and v6
