@@ -148,7 +148,7 @@ class SSHServer(paramiko.ServerInterface):
             else:
                 if output.__contains__(b"\n"):
                     output = output.replace(b"\n", b"\r\n")
-                chan.send("\r\n" + output)
+                chan.send("b\r\n" + output)
 
         self.session.commit()
         self.session.close()
