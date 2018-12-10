@@ -148,7 +148,7 @@ class SSHServer(paramiko.ServerInterface):
             else:
                 if output.__contains__(b"\n"):
                     output = output.replace(b"\n", b"\r\n")
-                chan.send("b\r\n" + output)
+                chan.send(b"\r\n" + output)
 
         self.session.commit()
         self.session.close()
@@ -166,7 +166,7 @@ class SSHServer(paramiko.ServerInterface):
 # listen to both IPv4 and v6
 # quad 0 allows for docker port exposure
 def get_addresses():
-    return [(socket.AF_INET, '0.0.0.0', 22)]
+    return [(socket.AF_INET, '0.0.0.0', 88)]
 
 
 def start_server(socket, engine):
