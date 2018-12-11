@@ -2,7 +2,6 @@ from sqlalchemy import Column, String, Integer, ForeignKey
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.ext.declarative import declared_attr
 from hpotter.hpotter import HPotterDB
-from hpotter.hpotter.command_response import command_response
 from paramiko.py3compat import u, decodebytes
 from hpotter.hpotter import consolidated
 import socket
@@ -201,8 +200,7 @@ def start_server(socket, engine):
             server.receive_client_data(chan)
             chan.close()
     except:
-        print("Error - SSH: Channel closed prematurely.\nRestarting...")
-        chan.close()
+        print("\nError - SSH: Channel closed prematurely.\nRestarting...")
         start_server(socket, engine)
 
 

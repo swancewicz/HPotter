@@ -65,7 +65,7 @@ class TelnetHandler(socketserver.BaseRequestHandler):
         command_count = 0
         workdir = ''
         while command_count < 4:
-            socket.sendall(prompt)
+            socket.sendall(b"\r\n/" + workdir[1:].encode("utf-8") + prompt)
             command = self.get_string(socket)
             command_count += 1
 
@@ -126,9 +126,9 @@ class TelnetHandler(socketserver.BaseRequestHandler):
         if username == '':
             return
 
-        prompt = b'\r\n#: '
+        prompt = b' # '
         if username == 'root' or username == 'admin':
-            prompt = b'\r\n$: '
+            prompt = b' $ '
 
         password = self.trying(b'Password: ', self.request)
         if password == '':
