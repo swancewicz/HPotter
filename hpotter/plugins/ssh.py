@@ -98,7 +98,7 @@ class SSHServer(paramiko.ServerInterface):
 
         while command_count < 4:
             command = ""
-            chan.send("\r\n# ")
+            chan.send("\r\n/" + workdir[1:] + " # ")
 
             while True:
                 character = chan.recv(1024).decode("utf-8")
@@ -153,46 +153,57 @@ class SSHServer(paramiko.ServerInterface):
         self.session.commit()
         self.session.close()
 
-    """Commented out for now, wasn't writing to db"""
+    # Try/Excepted for now. Added above two lines,
+    # wasn't committing sessions otherwise.
 
-    # def finish(self):
+    def finish(self):
+
         # ugly ugly ugly
         # i need to figure out how to properly mock sessionmaker
-    #    if not self.undertest:
-    #        self.session.commit()
-    #        self.session.close()
+        try:
+            if not self.undertest:
+                self.session.commit()
+                self.session.close()
+        except:
+            print("Error - SSH: SQLAlchemy Session already committed.")
 
 
 # listen to both IPv4 and v6
 # quad 0 allows for docker port exposure
 def get_addresses():
-    return [(socket.AF_INET, '0.0.0.0', 88)]
+    return [(socket.AF_INET, '0.0.0.0', 22)]
 
 
 def start_server(socket, engine):
     socket.listen(4)
 
-    while True:
-        client, addr = socket.accept()
+    # Try/Except implemented to prevent socket from
+    # breaking if the channel is closed prematurely
+    try:
+        while True:
+            client, addr = socket.accept()
 
-        transport = paramiko.Transport(client)
-        transport.load_server_moduli()
+            transport = paramiko.Transport(client)
+            transport.load_server_moduli()
 
-        # Experiment with different key sizes at:
-        # http://travistidwell.com/jsencrypt/demo/
-        host_key = paramiko.RSAKey(filename="RSAKey.cfg")
-        transport.add_server_key(host_key)
+            # Experiment with different key sizes at:
+            # http://travistidwell.com/jsencrypt/demo/
+            host_key = paramiko.RSAKey(filename="RSAKey.cfg")
+            transport.add_server_key(host_key)
 
-        server = SSHServer(socket, engine, addr)
-        transport.start_server(server=server)
-        chan = transport.accept()
-        if not chan:
-            print('no chan')
-            continue
+            server = SSHServer(socket, engine, addr)
+            transport.start_server(server=server)
+            chan = transport.accept()
+            if not chan:
+                print('no chan')
+                continue
 
-        chan.send("\r\nLast login: Whatever you want it to be")
-        server.receive_client_data(chan)
+            server.receive_client_data(chan)
+            chan.close()
+    except:
+        print("Error - SSH: Channel closed prematurely.\nRestarting...")
         chan.close()
+        start_server(socket, engine)
 
 
 def stop_server():
