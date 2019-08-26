@@ -1,18 +1,10 @@
 import graphene
 
 from graphene_django.types import DjangoObjectType
-import credentials.schema
 import connections.schema
 
 #class PasswordType(DjangoObjectType):
     #model = Password
-
-class Query(credentials.schema.Query, graphene.ObjectType):
-    pass
-
-class Mutation(credentials.schema.Mutation, graphene.ObjectType):
-    pass
-
 class Query(connections.schema.Query, graphene.ObjectType):
     pass
 
