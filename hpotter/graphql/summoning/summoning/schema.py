@@ -8,7 +8,7 @@ import connections.schema
 class Query(connections.schema.Query, graphene.ObjectType):
     pass
 
-class Mutation(connections.schema.Query, graphene.ObjectType):
+class Mutation(connections.schema.Mutation, graphene.ObjectType):
     pass
 
 schema = graphene.Schema(query=Query, mutation=Mutation)

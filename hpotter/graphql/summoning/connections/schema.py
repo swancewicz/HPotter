@@ -44,18 +44,22 @@ class CreateConnection(graphene.Mutation):
         credentials = graphene.Int()
     
     def mutate(self, info, country, sourceIP, sourcePort, createdAt, destIP, destPort, proto, credentials):
+        credentials = Credential.objects.filter(id=credentials).first()
         connection = Connection(country=country, sourceIP=sourceIP,
             sourcePort=sourcePort, createdAt=createdAt,
             destIP=destIP, destPort=destPort, proto=proto, credentials=credentials)
-        
-        return CreateConnection(id = country.id,
+        connection.save(connection)
+
+        return CreateConnection(
+            id = connection.id,
             country=connection.country,
             sourceIP = connection.sourceIP,
             createdAt=connection.createdAt,
+            sourcePort=connection.sourcePort,
             destIP = connection.destIP,
             destPort = connection.destPort,
             proto = connection.proto,
-            credentials = credentials,
+            credentials = connection.credentials,
             )
 
 class CreateCredential(graphene.Mutation):
@@ -69,11 +73,11 @@ class CreateCredential(graphene.Mutation):
     
     def mutate(self, info, username, password):
         credential = Credential(username=username, password=password)
-        credential.save()
+        Credential.objects.save()
 
         return CreateCredential(id = credential.id,
                                 username=credential.username,
-                                count = credential.password)
+                                password = credential.password)
 
 class Mutation(graphene.ObjectType):
     create_connection = CreateConnection.Field()

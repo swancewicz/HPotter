@@ -5,3 +5,10 @@ paramiko
 docker
 maxminddb-geolite2
 mysqlclient
+django
+graphene-django
+django-filter
+django-graphql-jwt
+pymongo
+djongo
+graphene-mongo
