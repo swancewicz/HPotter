@@ -1,20 +1,14 @@
-
-
---- How to create python virtual environment ---
+--- Required files ---
+Mongodb needs to be installed and running on localhost:27017 (default) to do this.
+https://docs.mongodb.com/manual/administration/install-community/
 
 --- How to run ---
 
-1) navigate to hpotter/graphql
-2) Start the venv with:
-	1) python -m venv venv
-	2) one of the two:
-	(mac) source venv/bin/activate
-	(windows, in git bash) source venv/Scripts/activate
-3) cd folder to summoning (cd summoning)
-4) Start the graphql server with the following command:
+NOTE:mongodb needs to be installed and running
+1) navigate to hpotter/graphql/summoning/
+2) Start the graphql server with the following command:
 	python manage.py runserver
-5) navigate to localhost:/8000
-
+3) navigate to localhost:/8000 to see the graphiql interface
 
 ---- How to migrate db changes ---
 
@@ -23,3 +17,4 @@ python manage.py migrate
 
 --- Useful links ---
 https://www.howtographql.com/graphql-python/1-getting-started/
+https://stackoverflow.com/questions/54259453/graphene-resolver-for-nested-custom-object
