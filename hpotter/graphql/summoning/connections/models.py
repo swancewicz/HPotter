@@ -21,3 +21,24 @@ class Connection(models.Model):
 
     def __str__(self):
         return self.country
+
+class HttpCommands(models.Model):
+    request = models.CharField(max_length=10000)
+    connection = models.ForeignKey(Connection, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.request
+
+class ShellCommands(models.Model):
+    command = models.CharField(max_length=100)
+    connection = models.ForeignKey(Connection, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.command
+
+class SqlCommands(models.Model):
+    request = models.CharField(max_length=10000)
+    connection = models.ForeignKey(Connection, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.request
