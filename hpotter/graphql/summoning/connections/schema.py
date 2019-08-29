@@ -1,5 +1,6 @@
 import graphene
 from graphene_django import DjangoObjectType
+from geolite2 import geolite2
 
 from .models import Connection
 from .models import Credential
@@ -34,7 +35,7 @@ class CreateConnection(graphene.Mutation):
     credentials = graphene.Field(CredentialType)
 
     class Arguments:
-        country = graphene.String()
+        #country = graphene.String()
         createdAt = graphene.types.datetime.DateTime()
         sourceIP = graphene.String()
         sourcePort = graphene.Int()
@@ -43,7 +44,13 @@ class CreateConnection(graphene.Mutation):
         proto = graphene.Int()
         credentials = graphene.Int()
     
-    def mutate(self, info, country, sourceIP, sourcePort, createdAt, destIP, destPort, proto, credentials):
+    def mutate(self, info, sourceIP, sourcePort, createdAt, destIP, destPort, proto, credentials):
+        reader = geolite2.reader() #TODO move this somewhere else
+        info = reader.get(sourceIP)
+        if "country" in info.keys():
+            country = info['country']['names']['en']
+        else:
+            country = None
         credentials = Credential.objects.filter(id=credentials).first()
         connection = Connection(country=country, sourceIP=sourceIP,
             sourcePort=sourcePort, createdAt=createdAt,

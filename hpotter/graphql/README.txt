@@ -2,6 +2,8 @@
 Mongodb needs to be installed and running on localhost:27017 (default) to do this.
 https://docs.mongodb.com/manual/administration/install-community/
 
+You'll have to migrate the db to create a db when you first start.
+
 --- How to run ---
 
 NOTE:mongodb needs to be installed and running
@@ -12,6 +14,7 @@ NOTE:mongodb needs to be installed and running
 
 ---- How to migrate db changes ---
 
+(this shouldn't be necessary for mongodb)
 python manage.py makemigrations
 python manage.py migrate
 
